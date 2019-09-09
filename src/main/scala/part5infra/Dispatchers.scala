@@ -6,6 +6,7 @@ import com.typesafe.config.ConfigFactory
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
+// Dispatcher in charge of delivering and handling messages within a actor system
 object Dispatchers extends App {
 
   class Counter extends Actor with ActorLogging {
@@ -21,11 +22,12 @@ object Dispatchers extends App {
   val system = ActorSystem("DispatchersDemo") // , ConfigFactory.load().getConfig("dispatchersDemo")
 
   // method #1 - programmatic/in code
+  // withDispatcher load config from the config (application.conf) for the Dispatcher
   val actors = for (i <- 1 to 10) yield system.actorOf(Props[Counter].withDispatcher("my-dispatcher"), s"counter_$i")
-//  val r = new Random()
-//  for (i <- 1 to 1000) {
-//    actors(r.nextInt(10)) ! i
-//  }
+  val r = new Random()
+  for (i <- 1 to 1000) {
+    actors(r.nextInt(10)) ! i
+  }
 
   // method #2 - from config
   val rtjvmActor = system.actorOf(Props[Counter], "rtjvm")

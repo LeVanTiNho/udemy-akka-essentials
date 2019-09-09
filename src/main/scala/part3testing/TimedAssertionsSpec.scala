@@ -24,6 +24,8 @@ class TimedAssertionsSpec extends TestKit(
     val workerActor = system.actorOf(Props[WorkerActor])
 
     "reply with the meaning of life in a timely manner" in {
+
+      // The assertion inside the within block must meet at least 500 millis and at most 1 second
       within(500 millis, 1 second) {
         workerActor ! "work"
         expectMsg(WorkResult(42))
@@ -34,6 +36,8 @@ class TimedAssertionsSpec extends TestKit(
       within(1 second) {
         workerActor ! "workSequence"
 
+        // within 2 seconds must receive 4 messages, at most 500 millis apart each messages
+        // The result will be catch by the pattern matching and we extract the results to a Seq
         val results: Seq[Int] = receiveWhile[Int](max=2 seconds, idle=500 millis, messages=4) {
           case WorkResult(result) => result
         }
