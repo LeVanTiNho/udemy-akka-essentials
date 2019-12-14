@@ -2,6 +2,7 @@ package part2actors
 
 import akka.actor.{Actor, ActorSystem, Props}
 
+// Lesson 1
 object ActorsIntro extends App {
 
   // part1 - actor systems
@@ -47,7 +48,4 @@ object ActorsIntro extends App {
 
   val person = actorSystem.actorOf(Person.props("Bob"))
   person ! "hi"
-
-
-
 }
