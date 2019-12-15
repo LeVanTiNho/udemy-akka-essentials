@@ -4,6 +4,7 @@ import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import part2actors.ActorCapabilities.BankAccount.Deposit
 import part2actors.ActorCapabilities.Person.LiveTheLife
 
+// Lesson 2
 object ActorCapabilities extends App {
 
   class SimpleActor extends Actor {
