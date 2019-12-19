@@ -5,11 +5,11 @@ import akka.actor.{Actor, ActorSystem, Props}
 // Lesson 1
 object ActorsIntro extends App {
 
-  // part1 - actor systems
+  /** part1 - actor systems */
   val actorSystem = ActorSystem("firstActorSystem")
   println(actorSystem.name)
 
-  // part2 - create actors
+  /** part2 - define actors */
   // word count actor
 
   class WordCountActor extends Actor {
@@ -21,20 +21,23 @@ object ActorsIntro extends App {
       case message: String =>
         println(s"[word counter] I have received: $message")
         totalWords += message.split(" ").length
-      case msg => println(s"[word counter] I cannot understand ${msg.toString}")
+      case msg => println(s"[word counter] I cannot understand ${msg.toString}") // Any type
     }
   }
 
-  // part3 - instantiate our actor
+  /** part3 - instantiate our actor */
+  // instantiate our actor only through ActorSystem
   val wordCounter = actorSystem.actorOf(Props[WordCountActor], "wordCounter")
   val anotherWordCounter = actorSystem.actorOf(Props[WordCountActor], "anotherWordCounter")
 
-  // part4 - communicate!
-  wordCounter ! "I am learning Akka and it's pretty damn cool!" // "tell"
+  /** part4 - communicate! */
+
+  // ! is tell method
+  wordCounter ! "I am learning Akka and it's pretty damn cool!"
   anotherWordCounter ! "A different message"
   // asynchronous!
 
-
+  /** Best practise */
   object Person {
     def props(name: String) = Props(new Person(name))
   }
