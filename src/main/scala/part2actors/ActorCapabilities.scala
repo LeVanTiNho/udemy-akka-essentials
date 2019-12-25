@@ -16,7 +16,7 @@ object ActorCapabilities extends App {
       case SendMessageToYourself(content) =>
         self ! content
       case SayHiTo(ref) => ref ! "Hi!" // alice is being passed as the sender
-      case WirelessPhoneMessage(content, ref) => ref forward (content + "s") // i keep the original sender of the WPM
+      case WirelessPhoneMessage(content, ref) => ref forward (content + "s") // forward method keep the original sender of the WirelessPhoneMessage
     }
   }
 
@@ -26,7 +26,7 @@ object ActorCapabilities extends App {
   simpleActor ! "hello, actor"
 
   // 1 - messages can be of any type
-  // a) messages must be IMMUTABLE
+  // a) messages must be IMMUTABLE -> to be thread-safe
   // b) messages must be SERIALIZABLE
   // in practice use case classes and case objects
 
@@ -37,6 +37,7 @@ object ActorCapabilities extends App {
 
   // 2 - actors have information about their context and about themselves
   // context.self === `this` in OOP
+  // context.sender === the last sender
 
   case class SendMessageToYourself(content: String)
   simpleActor ! SendMessageToYourself("I am an actor and I am proud of it")
@@ -49,6 +50,7 @@ object ActorCapabilities extends App {
   alice ! SayHiTo(bob)
 
   // 4 - dead letters
+  // ! method has an implicit parameter is the sender, default value of it is noSender
   alice ! "Hi!" // reply to "me"
 
   // 5 - forwarding messages
@@ -79,7 +81,7 @@ object ActorCapabilities extends App {
     */
 
 
-  // DOMAIN of the counter
+  // DOMAIN of an Actor is the companion object of that actor, we put the messages the actor can handle in domain
   object Counter {
     case object Increment
     case object Decrement
@@ -108,6 +110,7 @@ object ActorCapabilities extends App {
 
   // bank account
   object BankAccount {
+    // If messages contains information for the actor to handle, we should use case class, if not we should use object
     case class Deposit(amount: Int)
     case class Withdraw(amount: Int)
     case object Statement
@@ -128,6 +131,7 @@ object ActorCapabilities extends App {
           funds += amount
           sender() ! TransactionSuccess(s"successfully deposited $amount")
         }
+
       case Withdraw(amount) =>
         if (amount < 0) sender() ! TransactionFailure("invalid withdraw amount")
         else if (amount > funds) sender() ! TransactionFailure("insufficient funds")
@@ -135,7 +139,8 @@ object ActorCapabilities extends App {
           funds -= amount
           sender() ! TransactionSuccess(s"successfully withdrew $amount")
         }
-      case Statement => sender() ! s"Your balance is $funds"
+
+      case Statement => sender() ! s"Your balance is $funds" // This is the bad way when we don't use case class for messages
     }
   }
 
