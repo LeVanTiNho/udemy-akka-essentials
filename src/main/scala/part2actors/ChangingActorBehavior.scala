@@ -3,8 +3,11 @@ package part2actors
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import part2actors.ChangingActorBehavior.Mom.MomStart
 
+// Lesson 3
+/**
+  * Actors can change their behaviors depend on their state
+  */
 object ChangingActorBehavior extends App {
-
 
   object FussyKid {
     case object KidAccept
@@ -12,16 +15,18 @@ object ChangingActorBehavior extends App {
     val HAPPY = "happy"
     val SAD = "sad"
   }
+
   class FussyKid extends Actor {
     import FussyKid._
     import Mom._
 
     // internal state of the kid
-    var state = HAPPY
+    private var state = HAPPY
     override def receive: Receive = {
       case Food(VEGETABLE) => state = SAD
       case Food(CHOCOLATE) => state = HAPPY
       case Ask(_) =>
+        // Check the state of FussyKid to decide the next behavior
         if (state == HAPPY) sender() ! KidAccept
         else sender() ! KidReject
     }
