@@ -27,6 +27,7 @@ object ChangingActorBehavior extends App {
       case Food(CHOCOLATE) => state = HAPPY
       case Ask(_) =>
         // Check the state of FussyKid to decide the next behavior
+        // It's bad because when the logic of messages handling becomes more big, we must check the more state
         if (state == HAPPY) sender() ! KidAccept
         else sender() ! KidReject
     }
