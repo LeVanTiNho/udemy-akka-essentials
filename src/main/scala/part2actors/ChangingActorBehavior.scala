@@ -37,20 +37,35 @@ object ChangingActorBehavior extends App {
     import FussyKid._
     import Mom._
 
+    // At beginning, the Receive object returned from receive method will be the first message handler object of the stack
     override def receive: Receive = happyReceive
 
     def happyReceive: Receive = {
-      case Food(VEGETABLE) => context.become(sadReceive, false) // change my receive handler to sadReceive
+      // case Food(VEGETABLE) => context.become(sadReceive) // push the Receive object (returned from sadReceive) the stack and discard the current Receive
+
+      // context.become(sadReceive) // push the Receive object (returned from sadReceive) the stack and do not discard the current Receive
+      case Food(VEGETABLE) => context.become(sadReceive, false)
       case Food(CHOCOLATE) =>
       case Ask(_) => sender() ! KidAccept
     }
 
     def sadReceive: Receive = {
       case Food(VEGETABLE) => context.become(sadReceive, false)
-      case Food(CHOCOLATE) => context.unbecome()
+      case Food(CHOCOLATE) => context.unbecome() // remove the current Receive object from the stack
       case Ask(_) => sender() ! KidReject
     }
   }
+
+  /**
+    * The advantage of using message handler object stack to change behavior of actor when state changes is
+    * we can easily manage and understand the flow of logic
+    */
+
+  /**
+    * The rules:
+    *   - Akka always use the latest handler on the top of the stack
+    *   - When the stack is empty, it calls receive method to get the message handler object
+    */
 
   object Mom {
     case class MomStart(kidRef: ActorRef)
@@ -107,8 +122,8 @@ object ChangingActorBehavior extends App {
     new behavior
     Food(veg)
     Food(veg)
-    Food(choco)
-    Food(choco)
+    Food(chocolate)
+    Food(chocolate)
 
     Stack:
 
