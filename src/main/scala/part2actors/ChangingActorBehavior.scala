@@ -146,7 +146,9 @@ object ChangingActorBehavior extends App {
 
     override def receive: Receive = countReceive(0)
 
+    // This exercise show us that we can use parameters of receive method to save the state of actor
     def countReceive(currentCount: Int): Receive = {
+      // By somehow, Receive object return from this method can access to currentCount
       case Increment =>
         println(s"[countReceive($currentCount)] incrementing")
         context.become(countReceive(currentCount + 1))
