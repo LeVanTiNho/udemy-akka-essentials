@@ -3,6 +3,7 @@ package part2actors
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import part2actors.ChildActors.CreditCard.{AttachToAccount, CheckStatus}
 
+// Lesson 4
 object ChildActors extends App {
 
   // Actors can create other actors
@@ -46,9 +47,9 @@ object ChildActors extends App {
 
   /*
     Guardian actors (top-level)
-    - /system = system guardian
-    - /user = user-level guardian
-    - / = the root guardian
+    - /system = system guardian -> manages system actors
+    - /user = user-level guardian -> manages user actors
+    - / = the root guardian -> manages system actor and user actor
    */
 
   /**
