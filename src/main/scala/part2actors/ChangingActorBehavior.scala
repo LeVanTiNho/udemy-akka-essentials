@@ -170,11 +170,17 @@ object ChangingActorBehavior extends App {
     * Exercise 2 - a simplified voting system
     */
 
+  // The messages Citizen Actor and Vote Aggregator communicate on
   case class Vote(candidate: String)
   case object VoteStatusRequest
   case class VoteStatusReply(candidate: Option[String])
+
+
   class Citizen extends Actor {
+
+    // At the beginning the actor system calls the receive method to get the first Receive object to stack
     override def receive: Receive = {
+      // To make clear, we can add a new context that is un-voted
       case Vote(c) => context.become(voted(c))
       case VoteStatusRequest => sender() ! VoteStatusReply(None)
     }
@@ -195,9 +201,16 @@ object ChangingActorBehavior extends App {
     }
 
     def awaitingStatuses(stillWaiting: Set[ActorRef], currentStats: Map[String, Int]): Receive = {
+
       case VoteStatusReply(None) =>
+
         // a citizen hasn't voted yet
         sender() ! VoteStatusRequest // this might end up in an infinite loop
+
+        // Another way to handle this case to avoid an infinite loop
+        val newStillWaiting = stillWaiting - sender()
+        context.become(awaitingStatuses(newStillWaiting, currentStats))
+
       case VoteStatusReply(Some(candidate)) =>
         val newStillWaiting = stillWaiting - sender()
         val currentVotesOfCandidate = currentStats.getOrElse(candidate, 0)
