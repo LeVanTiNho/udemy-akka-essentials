@@ -2,6 +2,7 @@ package part2actors
 
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import part2actors.ChildActors.CreditCard.{AttachToAccount, CheckStatus}
+//import part2actors.ChildActors.CreditCard.{AttachToAccount, CheckStatus}
 
 // Lesson 4
 object ChildActors extends App {
@@ -55,13 +56,15 @@ object ChildActors extends App {
   /**
     * Actor selection
     */
-  val childSelection = system.actorSelection("/user/parent/child2")
+  val childSelection = system.actorSelection("/user/parent/child") // return ActorSelection, that is a wrapper of actor
   childSelection ! "I found you!"
 
   /**
     * Danger!
     *
-    * NEVER PASS MUTABLE ACTOR STATE, OR THE `THIS` REFERENCE, TO CHILD ACTORS.
+    * NEVER PASS MUTABLE ACTOR STATE, OR THE `THIS` REFERENCE (DIRECTLY TO ACTOR INSTANCE), TO CHILD ACTORS OR ANY ACTORS
+    *
+    * ACTORS ONLY COMMUNICATE THROUGH ACTOR REFERENCE AND MESSAGE
     *
     * NEVER IN YOUR LIFE.
     */
@@ -76,7 +79,8 @@ object ChildActors extends App {
     import NaiveBankAccount._
     import CreditCard._
 
-    var amount = 0
+    // In this case, the amount of an bank account is not a state variable
+    private var amount = 0
 
     override def receive: Receive = {
       case InitializeAccount =>
@@ -84,14 +88,13 @@ object ChildActors extends App {
         creditCardRef ! AttachToAccount(this) // !!
       case Deposit(funds) => deposit(funds)
       case Withdraw(funds) => withdraw(funds)
-
     }
 
-    def deposit(funds: Int) = {
+    private def deposit(funds: Int): Unit = {
       println(s"${self.path} depositing $funds on top of $amount")
       amount += funds
     }
-    def withdraw(funds: Int) = {
+    private def withdraw(funds: Int): Unit = {
       println(s"${self.path} withdrawing $funds from $amount")
       amount -= funds
     }
@@ -109,8 +112,7 @@ object ChildActors extends App {
     def attachedTo(account: NaiveBankAccount): Receive = {
       case CheckStatus =>
         println(s"${self.path} your messasge has been processed.")
-        // benign
-        account.withdraw(1) // because I can
+        // account.withdraw(1) // because I can
     }
   }
 
