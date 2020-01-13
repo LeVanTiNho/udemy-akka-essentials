@@ -2,6 +2,7 @@ package part2actors
 
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 
+// Lesson 5
 object ChildActorsExercise extends App {
 
   // Distributed Word counting
