@@ -7,12 +7,16 @@ import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
 import scala.concurrent.duration._
 import scala.util.Random
 
-class BasicSpec extends TestKit(ActorSystem("BasicSpec"))
-  with ImplicitSender
-  with WordSpecLike
-  with BeforeAndAfterAll {
+// Lesson 1: Basic Spec
 
-  // setup
+// Name of testing classes should have suffix Spec
+class BasicSpec extends TestKit(ActorSystem("BasicSpec")) // TestKit requires an ActorSystem
+  with ImplicitSender // Send-reply scenarios
+  with WordSpecLike // Allow descriptions of tests in a very natural language style
+  with BeforeAndAfterAll // Supply a set of hooks, when we run test suit, the set of hooks will be called
+{
+
+  // Define a hook, afterAll hook used to destroy the test suit when it's done
   override def afterAll(): Unit = {
     TestKit.shutdownActorSystem(system)
   }
@@ -77,12 +81,14 @@ class BasicSpec extends TestKit(ActorSystem("BasicSpec"))
     }
 
   }
-
-
 }
 
+
+// We should define all the information of a test in the companion object of that test
 object BasicSpec {
 
+  // test kid is used to test an particular actor or a particular group of actor
+  // Normally, that is defined outside by developer
   class SimpleActor extends Actor {
     override def receive: Receive = {
       case message => sender() ! message
@@ -91,6 +97,7 @@ object BasicSpec {
 
   class Blackhole extends Actor {
     override def receive: Receive = Actor.emptyBehavior
+    // emptyBehavior is a Receive object, that is a PartialFunction 
   }
 
   class LabTestActor extends Actor {
