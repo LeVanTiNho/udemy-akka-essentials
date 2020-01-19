@@ -29,12 +29,13 @@ class BasicSpec extends TestKit(ActorSystem("BasicSpec")) // TestKit requires an
       val message = "hello, test"
       echoActor ! message
 
+      // A expectation has 3s duration by default, we can config it
       expectMsg(message) // akka.test.single-expect-default
     }
   }
 
   "A blackhole actor" should {
-    "send back some message" in {
+    "not reply" in {
       val blackhole = system.actorOf(Props[Blackhole])
       val message = "hello, test"
       blackhole ! message
@@ -43,44 +44,44 @@ class BasicSpec extends TestKit(ActorSystem("BasicSpec")) // TestKit requires an
     }
   }
 
-  // message assertions
-  "A lab test actor" should {
-    val labTestActor = system.actorOf(Props[LabTestActor])
-
-    "turn a string into uppercase" in {
-      labTestActor ! "I love Akka"
-      val reply = expectMsgType[String]
-
-      assert(reply == "I LOVE AKKA")
-    }
-
-    "reply to a greeting" in {
-      labTestActor ! "greeting"
-      expectMsgAnyOf("hi", "hello")
-    }
-
-    "reply with favorite tech" in {
-      labTestActor ! "favoriteTech"
-      expectMsgAllOf("Scala", "Akka")
-    }
-
-    "reply with cool tech in a different way" in {
-      labTestActor ! "favoriteTech"
-      val messages = receiveN(2) // Seq[Any]
-
-      // free to do more complicated assertions
-    }
-
-    "reply with cool tech in a fancy way" in {
-      labTestActor ! "favoriteTech"
-
-      expectMsgPF() {
-        case "Scala" => // only care that the PF is defined
-        case "Akka" =>
-      }
-    }
-
-  }
+//  // message assertions
+//  "A lab test actor" should {
+//    val labTestActor = system.actorOf(Props[LabTestActor])
+//
+//    "turn a string into uppercase" in {
+//      labTestActor ! "I love Akka"
+//      val reply = expectMsgType[String]
+//
+//      assert(reply == "I LOVE AKKA")
+//    }
+//
+//    "reply to a greeting" in {
+//      labTestActor ! "greeting"
+//      expectMsgAnyOf("hi", "hello")
+//    }
+//
+//    "reply with favorite tech" in {
+//      labTestActor ! "favoriteTech"
+//      expectMsgAllOf("Scala", "Akka")
+//    }
+//
+//    "reply with cool tech in a different way" in {
+//      labTestActor ! "favoriteTech"
+//      val messages = receiveN(2) // Seq[Any]
+//
+//      // free to do more complicated assertions
+//    }
+//
+//    "reply with cool tech in a fancy way" in {
+//      labTestActor ! "favoriteTech"
+//
+//      expectMsgPF() {
+//        case "Scala" => // only care that the PF is defined
+//        case "Akka" =>
+//      }
+//    }
+//
+//  }
 }
 
 
@@ -91,13 +92,15 @@ object BasicSpec {
   // Normally, that is defined outside by developer
   class SimpleActor extends Actor {
     override def receive: Receive = {
-      case message => sender() ! message
+      case message =>
+        Thread.sleep(2000)
+        sender() ! message
     }
   }
 
   class Blackhole extends Actor {
     override def receive: Receive = Actor.emptyBehavior
-    // emptyBehavior is a Receive object, that is a PartialFunction 
+    // emptyBehavior is a Receive object, that is a PartialFunction
   }
 
   class LabTestActor extends Actor {
