@@ -44,44 +44,48 @@ class BasicSpec extends TestKit(ActorSystem("BasicSpec")) // TestKit requires an
     }
   }
 
-//  // message assertions
-//  "A lab test actor" should {
-//    val labTestActor = system.actorOf(Props[LabTestActor])
-//
-//    "turn a string into uppercase" in {
-//      labTestActor ! "I love Akka"
-//      val reply = expectMsgType[String]
-//
-//      assert(reply == "I LOVE AKKA")
-//    }
-//
-//    "reply to a greeting" in {
-//      labTestActor ! "greeting"
-//      expectMsgAnyOf("hi", "hello")
-//    }
-//
-//    "reply with favorite tech" in {
-//      labTestActor ! "favoriteTech"
-//      expectMsgAllOf("Scala", "Akka")
-//    }
-//
-//    "reply with cool tech in a different way" in {
-//      labTestActor ! "favoriteTech"
-//      val messages = receiveN(2) // Seq[Any]
-//
-//      // free to do more complicated assertions
-//    }
-//
-//    "reply with cool tech in a fancy way" in {
-//      labTestActor ! "favoriteTech"
-//
-//      expectMsgPF() {
-//        case "Scala" => // only care that the PF is defined
-//        case "Akka" =>
-//      }
-//    }
-//
-//  }
+  // message assertions
+  "A lab test actor" should {
+    val labTestActor = system.actorOf(Props[LabTestActor])
+
+    "turn a string into uppercase" in {
+      labTestActor ! "I love Akka"
+
+      // Assert the received message conforms to the type and returns it
+      val reply = expectMsgType[String]
+
+      // assert method of Assertions trait of scalatest package
+      assert(reply == "I LOVE AKKA")
+    }
+
+    "reply to a greeting" in {
+      labTestActor ! "greeting"
+      expectMsgAnyOf("hi", "hello") // test if receive hi or hello
+    }
+
+    "reply with favorite tech" in {
+      labTestActor ! "favoriteTech"
+      expectMsgAllOf("Scala", "Akka") // test must receive "Scala" vaf "Akka"
+    }
+
+    "reply with cool tech in a different way" in {
+      labTestActor ! "favoriteTech"
+      val messages = receiveN(2) // Seq[Any], test must receive 2 two messages in the default duration
+
+      // free to do more complicated assertions
+    }
+
+    "reply with cool tech in a fancy way" in {
+      labTestActor ! "favoriteTech"
+
+      // expectMsgPF receives a PF
+      // in PF we can add more assertion or return a value of some Type
+      expectMsgPF() {
+        case "Scala" => expectMsg("Scala")
+        case "Akka" =>
+      }
+    }
+  }
 }
 
 
