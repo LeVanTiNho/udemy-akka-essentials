@@ -244,6 +244,4 @@ object ChangingActorBehavior extends App {
     Jonas -> 1
     Roland -> 2
    */
-
-
 }
