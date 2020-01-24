@@ -13,6 +13,7 @@ object ChildActors extends App {
     case class CreateChild(name: String)
     case class TellChild(message: String)
   }
+
   class Parent extends Actor {
     import Parent._
 
@@ -43,8 +44,8 @@ object ChildActors extends App {
   parent ! TellChild("hey Kid!")
 
   // actor hierarchies
-  // parent -> child -> grandChild
-  //        -> child2 ->
+  // parent -> child 1 -> grandChild
+  //        -> child 2 ->
 
   /*
     Guardian actors (top-level)

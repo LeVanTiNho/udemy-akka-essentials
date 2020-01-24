@@ -43,7 +43,7 @@ object ChangingActorBehavior extends App {
     def happyReceive: Receive = {
       // case Food(VEGETABLE) => context.become(sadReceive) // push the Receive object (returned from sadReceive) the stack and discard the current Receive
 
-      // context.become(sadReceive) // push the Receive object (returned from sadReceive) the stack and do not discard the current Receive
+      // push the Receive object (returned from sadReceive) the stack and do not discard the current Receive
       case Food(VEGETABLE) => context.become(sadReceive, false)
       case Food(CHOCOLATE) =>
       case Ask(_) => sender() ! KidAccept
@@ -74,6 +74,7 @@ object ChangingActorBehavior extends App {
     val VEGETABLE = "veggies"
     val CHOCOLATE = "chocolate"
   }
+
   class Mom extends Actor {
     import Mom._
     import FussyKid._
