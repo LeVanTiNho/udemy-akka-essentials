@@ -20,8 +20,8 @@ class TestProbeSpec extends TestKit(ActorSystem("TestProbeSpec"))
       val master = system.actorOf(Props[Master])
 
       // TestProbe is used as a fictitious actor, it can send, reply, forward, get sender of the current massage
-      // TestProbe is a special test kit, it has the same actor system with the current test kit, so it has assertion
-      // capabilities of TestKit
+      // TestProbe is a special test kit, it has the same actor system with the current test kit, so it has assertion capabilities of TestKit
+      // Note: TestProbe has different test actor with the current test kit
       val slave = TestProbe("slave")
 
       master ! Register(slave.ref)
@@ -42,6 +42,11 @@ class TestProbeSpec extends TestKit(ActorSystem("TestProbeSpec"))
       slave.reply(WorkCompleted(3, testActor))
 
       expectMsg(Report(3)) // testActor receives the Report(3)
+
+      /**
+        * Note:
+        *  Assertions is performed one after one, so when a assertion failed, all the test failed
+        */
     }
 
     "aggregate data correctly" in {
@@ -87,6 +92,7 @@ object TestProbeSpec {
   class Master extends Actor {
     override def receive: Receive = {
       case Register(slaveRef) =>
+        //Thread.sleep(3000)
         sender() ! RegistrationAck
         context.become(online(slaveRef, 0))
       case _ => // ignore
