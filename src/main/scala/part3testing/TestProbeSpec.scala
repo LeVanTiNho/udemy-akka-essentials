@@ -18,6 +18,10 @@ class TestProbeSpec extends TestKit(ActorSystem("TestProbeSpec"))
   "A master actor" should {
     "register a slave" in {
       val master = system.actorOf(Props[Master])
+
+      // TestProbe is used as a fictitious actor, it can send, reply, forward, get sender of the current massage
+      // TestProbe is a special test kit, it has the same actor system with the current test kit, so it has assertion
+      // capabilities of TestKit
       val slave = TestProbe("slave")
 
       master ! Register(slave.ref)
