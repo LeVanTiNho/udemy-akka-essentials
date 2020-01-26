@@ -47,7 +47,7 @@ object ActorLoggingDemo extends App {
 
   /**
     * Notes:
-    *   - The logging is asynchronously -> we can except some order of the log message
+    *   - The logging is asynchronously -> we cannot except some order of the log message
     *   - The Logging module doesn't depend on the actor implementation -> so we can use another logging module
     */
 }
