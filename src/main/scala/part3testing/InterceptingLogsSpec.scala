@@ -5,6 +5,7 @@ import akka.testkit.{EventFilter, ImplicitSender, TestKit}
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
 
+// Lesson 4
 class InterceptingLogsSpec extends TestKit(ActorSystem("InterceptingLogsSpec", ConfigFactory.load().getConfig("interceptingLogMessages")))
   with ImplicitSender
   with WordSpecLike
