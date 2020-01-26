@@ -4,6 +4,7 @@ import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
 
+// Lesson 2
 class TestProbeSpec extends TestKit(ActorSystem("TestProbeSpec"))
   with ImplicitSender
   with WordSpecLike
@@ -60,6 +61,9 @@ class TestProbeSpec extends TestKit(ActorSystem("TestProbeSpec"))
       master ! Work(workloadString)
 
       // in the meantime I don't have a slave actor
+      // In case, we just wanna test master actor behaviors, anh we don't create slave actor, but we need something plays role as slave actor
+
+      // receiveWhile means while receiving do something
       slave.receiveWhile() {
         case SlaveWork(`workloadString`, `testActor`) => slave.reply(WorkCompleted(3, testActor))
       }

@@ -8,6 +8,8 @@ import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
 import scala.concurrent.duration._
 import scala.util.Random
 
+// Lesson 3
+
 class TimedAssertionsSpec extends TestKit(
   ActorSystem("TimedAssertionsSpec", ConfigFactory.load().getConfig("specialTimedAssertionsConfig")))
   with ImplicitSender
