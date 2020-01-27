@@ -2,7 +2,16 @@ package part4faulttolerance
 
 import akka.actor.{Actor, ActorLogging, ActorSystem, PoisonPill, Props}
 
+// Lesson 2
 object ActorLifecycle extends App {
+
+  /**
+    * Started: Create a new ActorRef with a UUID, at a given path
+    * Suspended: Still enqueue, but not process massages
+    * Resumed: Continue process massages
+    * Restarted: Remove the actor instance and replace with a new actor instance, so old states will be removed
+    * Stopped: Frees the actor within a path, so a new Actor with different UUID can occupy the path
+    */
 
   object StartChild
   class LifecycleActor extends Actor with ActorLogging {
