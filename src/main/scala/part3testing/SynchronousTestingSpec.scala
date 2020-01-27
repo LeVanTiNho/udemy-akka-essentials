@@ -5,9 +5,10 @@ import akka.testkit.{CallingThreadDispatcher, TestActorRef, TestProbe}
 import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
 import scala.concurrent.duration._
 
+// Lesson 5
 class SynchronousTestingSpec extends WordSpecLike with BeforeAndAfterAll {
 
-  implicit val system = ActorSystem("SynchronousTestingSpec")
+  implicit val system: ActorSystem = ActorSystem("SynchronousTestingSpec")
 
   override def afterAll(): Unit = {
     system.terminate()
