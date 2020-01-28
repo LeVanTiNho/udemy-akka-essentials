@@ -45,11 +45,10 @@ object TimersSchedulers extends App {
   class SelfClosingActor extends Actor with ActorLogging {
     var schedule = createTimeoutWindow()
 
-    def createTimeoutWindow(): Cancellable = {
+    def createTimeoutWindow(): Cancellable =
       context.system.scheduler.scheduleOnce(1 second) {
         self ! "timeout"
       }
-    }
 
     override def receive: Receive = {
       case "timeout" =>
@@ -73,7 +72,7 @@ object TimersSchedulers extends App {
   }
 
   /**
-    * Timer
+    * Timer: Used to schedule sending messages within an actor itself
     */
 
   case object TimerKey
