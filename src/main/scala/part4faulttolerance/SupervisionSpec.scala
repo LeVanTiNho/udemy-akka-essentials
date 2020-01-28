@@ -5,6 +5,12 @@ import akka.actor.{Actor, ActorRef, ActorSystem, AllForOneStrategy, OneForOneStr
 import akka.testkit.{EventFilter, ImplicitSender, TestKit}
 import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
 
+// Lesson 3: Supervision strategy
+
+/**
+  * In parallel programming, resolving the errors is a important problem
+  * With fault tolerance, akka offers developers a powerful tool to handle errors
+  */
 class SupervisionSpec extends TestKit(ActorSystem("SupervisionSpec"))
   with ImplicitSender with WordSpecLike with BeforeAndAfterAll {
 
@@ -49,6 +55,7 @@ class SupervisionSpec extends TestKit(ActorSystem("SupervisionSpec"))
       val child = expectMsgType[ActorRef]
 
       watch(child)
+
       child ! "akka is nice"
       val terminatedMessage = expectMsgType[Terminated]
       assert(terminatedMessage.actor == child)
@@ -79,6 +86,10 @@ class SupervisionSpec extends TestKit(ActorSystem("SupervisionSpec"))
       child ! 45
       child ! Report
       expectMsg(0)
+
+      /**
+        * Note: By default, /user guardian strategy is restart all
+        */
     }
   }
 
@@ -115,7 +126,7 @@ object SupervisionSpec {
       case _: NullPointerException => Restart
       case _: IllegalArgumentException => Stop
       case _: RuntimeException => Resume
-      case _: Exception => Escalate
+      case _: Exception => Escalate // Escalate: Stop all the child actor and escalate the failure to the supervisor of it
     }
 
     override def receive: Receive = {
@@ -132,7 +143,7 @@ object SupervisionSpec {
   }
 
   class AllForOneSupervisor extends Supervisor {
-    override val supervisorStrategy = AllForOneStrategy() {
+    override val supervisorStrategy: SupervisorStrategy = AllForOneStrategy() {
       case _: NullPointerException => Restart
       case _: IllegalArgumentException => Stop
       case _: RuntimeException => Resume
@@ -145,6 +156,10 @@ object SupervisionSpec {
     var words = 0
 
     override def receive: Receive = {
+      /**
+        * Note: When an exception thrown when massages handling is happening, the actor comes to suspended state
+        */
+
       case Report => sender() ! words
       case "" => throw new NullPointerException("sentence is empty")
       case sentence: String =>
@@ -154,5 +169,4 @@ object SupervisionSpec {
       case _ => throw new Exception("can only receive strings")
     }
   }
-
 }

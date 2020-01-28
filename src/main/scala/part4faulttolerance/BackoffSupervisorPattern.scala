@@ -9,6 +9,8 @@ import akka.pattern.{Backoff, BackoffSupervisor}
 import scala.concurrent.duration._
 import scala.io.Source
 
+// Lesson 4: Backoff supervisor pattern
+
 object BackoffSupervisorPattern extends App {
 
   case object ReadFile
