@@ -5,6 +5,11 @@ import akka.io.Udp.SO
 import akka.routing._
 import com.typesafe.config.ConfigFactory
 
+// Lesson 2: Routers
+
+/**
+  * Routers is middle-level actors that forward messages to other actors.
+  */
 object Routers extends App {
 
   /**

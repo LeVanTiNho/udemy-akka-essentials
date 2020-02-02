@@ -1,10 +1,11 @@
 package part5infra
 
 import akka.actor.{Actor, ActorLogging, ActorSystem, Props}
-import com.typesafe.config.ConfigFactory
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
+
+// Lesson 3: Dispatchers
 
 // Dispatcher in charge of delivering and handling messages within a actor system
 object Dispatchers extends App {

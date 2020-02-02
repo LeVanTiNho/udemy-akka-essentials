@@ -100,4 +100,9 @@ object TimersSchedulers extends App {
     timerHeartbeatActor ! Stop
   }
 
+  /**
+    * Note:
+    *   When a new timer starts a new scheduling, the old scheduling will be cancelled.
+    *   timers.cancel method is used to cancel timers
+    */
 }
