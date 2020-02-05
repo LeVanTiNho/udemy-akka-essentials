@@ -4,15 +4,19 @@ import akka.actor.{Actor, ActorLogging, ActorSystem, PoisonPill, Props}
 import akka.dispatch.{ControlMessage, PriorityGenerator, UnboundedPriorityMailbox}
 import com.typesafe.config.{Config, ConfigFactory}
 
+// Lesson 4: Mailboxes
+
 object Mailboxes extends App {
 
-  val system = ActorSystem("MailboxDemo", ConfigFactory.load().getConfig("mailboxesDemo"))
+  val system = ActorSystem("MailboxDemo", ConfigFactory.load().getConfig("mailboxesDemo")) // Here, we load a config for an actor system
 
   class SimpleActor extends Actor with ActorLogging {
     override def receive: Receive = {
       case message => log.info(message.toString)
     }
   }
+
+  // Actors have its default mailboxes, we can custom them
 
   /**
     * Interesting case #1 - custom priority mailbox
@@ -25,6 +29,8 @@ object Mailboxes extends App {
   // step 1 - mailbox definition
   class SupportTicketPriorityMailbox(settings: ActorSystem.Settings, config: Config)
     extends UnboundedPriorityMailbox(
+      // Unbounded -> Not limit the number of mails
+      // Priority -> Mails have its priority
       PriorityGenerator {
         case message: String if message.startsWith("[P0]") => 0
         case message: String if message.startsWith("[P1]") => 1
@@ -42,11 +48,14 @@ object Mailboxes extends App {
   supportTicketLogger ! "[P1] do this when you have the time"
 
   // after which time can I send another message and be prioritized accordingly?
+  // The answer is no way to know, no way to config
 
   /**
     * Interesting case #2 - control-aware mailbox
     * we'll use UnboundedControlAwareMailbox
+    * UnboundedControlAwareMailbox make important messages be handle first
     */
+
   // step 1 - mark important messages as control messages
   case object ManagementTicket extends ControlMessage
 
@@ -54,11 +63,12 @@ object Mailboxes extends App {
     step 2 - configure who gets the mailbox
     - make the actor attach to the mailbox
    */
+
   // method #1
   val controlAwareActor = system.actorOf(Props[SimpleActor].withMailbox("control-mailbox"))
-//  controlAwareActor ! "[P0] this needs to be solved NOW!"
-//  controlAwareActor ! "[P1] do this when you have the time"
-//  controlAwareActor ! ManagementTicket
+  controlAwareActor ! "[P0] this needs to be solved NOW!"
+  controlAwareActor ! "[P1] do this when you have the time"
+  controlAwareActor ! ManagementTicket
 
   // method #2 - using deployment config
   val altControlAwareActor = system.actorOf(Props[SimpleActor], "altControlAwareActor")
