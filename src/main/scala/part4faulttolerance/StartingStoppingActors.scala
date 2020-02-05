@@ -2,7 +2,7 @@ package part4faulttolerance
 
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Kill, PoisonPill, Props, Terminated}
 
-// Lesson 1: Starting, Stopping, Watching Actors
+// Lesson 1: Stopping, Watching Actors
 object StartingStoppingActors extends App {
 
   val system = ActorSystem("StoppingActorsDemo")
@@ -54,35 +54,35 @@ object StartingStoppingActors extends App {
   import Parent._
   val parent = system.actorOf(Props[Parent], "parent")
 
-//  parent ! StartChild("child1")
-//  val child = system.actorSelection("/user/parent/child1")
-//  child ! "hi kid!"
+  parent ! StartChild("child1")
+  val child = system.actorSelection("/user/parent/child1")
+  child ! "hi kid!"
 
-//  parent ! StopChild("child1")
-//  for (_ <- 1 to 50) child ! "are you still there?"
+  parent ! StopChild("child1")
+  for (_ <- 1 to 50) child ! "are you still there?"
 
-//  parent ! StartChild("child2")
-//  val child2 = system.actorSelection("user/parent/child2")
-//  child2 ! "hi, second child"
-//
-//  parent ! Stop
-//  for (_ <- 1 to 10) parent ! "parent, are you still there?"
-//
-//  for (i <- 1 to 100) child2 ! s"[$i] second kid, are you still alive?"
+  parent ! StartChild("child2")
+  val child2 = system.actorSelection("user/parent/child2")
+  child2 ! "hi, second child"
+
+  parent ! Stop
+  for (_ <- 1 to 10) parent ! "parent, are you still there?"
+
+  for (i <- 1 to 100) child2 ! s"[$i] second kid, are you still alive?"
 
   /**
     * method #2 - using special messages
     */
 
-//  val looseActor = system.actorOf(Props[Child])
-//  looseActor ! "hello, loose actor"
-//  looseActor ! PoisonPill // like stop(self) call, PoisonPill will make the actor will not be received any more massage
-//  looseActor ! "loose actor, are you still there?"
-//
-//  val abruptlyTerminatedActor = system.actorOf(Props[Child])
-//  abruptlyTerminatedActor ! "you are about to be terminated"
-//  abruptlyTerminatedActor ! Kill // Kill messages make the actor stop and throw ActorKilledException
-//  abruptlyTerminatedActor ! "you have been terminated"
+  val looseActor = system.actorOf(Props[Child])
+  looseActor ! "hello, loose actor"
+  looseActor ! PoisonPill // like stop(self) call, PoisonPill will make the actor will not be received any more massage
+  looseActor ! "loose actor, are you still there?"
+
+  val abruptlyTerminatedActor = system.actorOf(Props[Child])
+  abruptlyTerminatedActor ! "you are about to be terminated"
+  abruptlyTerminatedActor ! Kill // Kill messages make the actor stop and throw ActorKilledException
+  abruptlyTerminatedActor ! "you have been terminated"
 
   /**
     *  Death watch
