@@ -6,11 +6,12 @@ import akka.actor.{Actor, ActorLogging, ActorSystem, PoisonPill, Props}
 object ActorLifecycle extends App {
 
   /**
-    * Started: Create a new ActorRef with a UUID, at a given path
-    * Suspended: Still enqueue, but not process massages
-    * Resumed: Continue process massages
-    * Restarted: Remove the actor instance and replace with a new actor instance, so old states will be removed
-    * Stopped: Frees the actor within a path, so a new Actor with different UUID can occupy the path
+    * Actor state:
+    *   Started: Create a new ActorRef with a UUID, at a given path
+    *   Suspended: Still enqueue, but not process massages
+    *   Resumed: Continue process massages
+    *   Restarted: Remove the actor instance and replace with a new actor instance, so old states will be removed
+    *   Stopped: Frees the actor within a path, so a new Actor with different UUID can occupy the path
     */
 
   object StartChild
@@ -26,9 +27,9 @@ object ActorLifecycle extends App {
   }
 
   val system = ActorSystem("LifecycleDemo")
-//  val parent = system.actorOf(Props[LifecycleActor], "parent")
-//  parent ! StartChild
-//  parent ! PoisonPill
+  val parent = system.actorOf(Props[LifecycleActor], "parent")
+  parent ! StartChild
+  parent ! PoisonPill // When an actor is going to stop, it will stop its child first
 
   /**
     * restart
@@ -62,7 +63,10 @@ object ActorLifecycle extends App {
     override def receive: Receive = {
       case Fail =>
         log.warning("child will fail now")
+
         throw new RuntimeException("I failed")
+        // By default, when an exception is thrown when a message is handled, the actor will be restarted
+
       case Check =>
         log.info("alive and kicking")
     }

@@ -11,6 +11,7 @@ import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
   * In parallel programming, resolving the errors is a important problem
   * With fault tolerance, akka offers developers a powerful tool to handle errors
   */
+
 class SupervisionSpec extends TestKit(ActorSystem("SupervisionSpec"))
   with ImplicitSender with WordSpecLike with BeforeAndAfterAll {
 
@@ -122,11 +123,19 @@ object SupervisionSpec {
 
   class Supervisor extends Actor {
 
+    override def preStart(): Unit = println("Supervisor is starting")
+    override def postStop(): Unit = println("Supervisor has stopped")
+
     override val supervisorStrategy: SupervisorStrategy = OneForOneStrategy() {
       case _: NullPointerException => Restart
       case _: IllegalArgumentException => Stop
       case _: RuntimeException => Resume
-      case _: Exception => Escalate // Escalate: Stop all the child actor and escalate the failure to the supervisor of it
+      case _: Exception => Escalate
+      // Escalate: Stop all the child actor and escalate the failure to the supervisor of it
+      /**
+        * Notice: If Supervisor is a child of /user guardian, when Supervisor escalate the error to /user,
+        * All the children of Supervisor is stopped and Supervisor strategy of /user will be applied on Supervisor
+        */
     }
 
     override def receive: Receive = {
@@ -138,7 +147,7 @@ object SupervisionSpec {
 
   class NoDeathOnRestartSupervisor extends Supervisor {
     override def preRestart(reason: Throwable, message: Option[Any]): Unit = {
-      // empty
+      // be default implementation, preRestart method top all the children
     }
   }
 
@@ -154,6 +163,9 @@ object SupervisionSpec {
   case object Report
   class FussyWordCounter extends Actor {
     var words = 0
+
+    override def preStart(): Unit = println("FussyWordCounter is starting")
+    override def postStop(): Unit = println("FussyWordCounter has stopped")
 
     override def receive: Receive = {
       /**
