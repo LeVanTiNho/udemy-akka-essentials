@@ -79,11 +79,13 @@ object AskSpec {
   case class Authenticate(username: String, password: String)
   case class AuthFailure(message: String)
   case object AuthSuccess
+
   object AuthManager {
     val AUTH_FAILURE_NOT_FOUND = "username not found"
     val AUTH_FAILURE_PASSWORD_INCORRECT = "password incorrect"
     val AUTH_FAILURE_SYSTEM = "system error"
   }
+
   class AuthManager extends Actor with ActorLogging {
     import AuthManager._
 
@@ -138,5 +140,4 @@ object AskSpec {
       responseFuture.pipeTo(sender())
     }
   }
-
 }
